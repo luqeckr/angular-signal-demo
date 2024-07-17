@@ -1,0 +1,22 @@
+@if (product) {
+  <!-- <div class="cc"> -->
+    <div class="card" [ngStyle]="{ position: 'fixed', 'max-width': '45vw'}">
+      <div class="row g-0">
+        <div class="col-md-4 d-flex">
+          <div class="card-img-wrapper" [ngStyle]="{'max-width': '250px', 'height': '210px', 'margin': 'auto'}">
+            <img [src]="product.image" [alt]="product.title" [ngStyle]="{'max-width': '100%', 'max-height': '100%', 'object-fit': 'cover'}">
+          </div>
+        </div>
+        <div class="col-md-8">
+          <div class="card-body">
+            <h5 class="card-title">{{ product.title }}</h5>
+            <p class="card-text"><strong>Category:</strong> {{ product.category }}</p>
+            <p class="card-text"><strong>Price:</strong> ${{ product.price }}</p>
+            <p class="card-text">{{ product.description }}</p>
+            <button class="btn btn-warning" (click)="addToCart()">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  <!-- </div> -->
+}
