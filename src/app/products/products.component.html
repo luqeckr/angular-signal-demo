@@ -7,7 +7,7 @@
       @for (product of products; track $index) {
       <ul class="list-group list-group-flush">
         <li class="list-group-item list-group-item-action" [ngClass]="{active: product.id == selectedProduct?.id}"
-          (click)="viewProductDetails(product)">
+          (click)="viewProductDetails(product)" [routerLink]="['/products', product.id]">
           {{ product.title }}
         </li>
       </ul>
