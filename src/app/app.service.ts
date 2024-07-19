@@ -1,12 +1,14 @@
-import { Injectable } from '@angular/core';
+import { computed, Injectable, signal } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 import { CartItem, Product } from './product.model';
 
 @Injectable({providedIn: 'root'})
 export class AppService {
   cartCount$ = new BehaviorSubject(0)
-  cart: CartItem[] = []
+  cart = signal<CartItem[]>([])
   totalPrice$ = new BehaviorSubject(0)
+  totalQuantity = computed(() => this.cart().reduce((acc, item) => acc + item.quantity, 0));
+  totalPrice = computed(() => this.cart().reduce((acc, item) => acc + item.product.price * item.quantity, 0));
 
   constructor() { }
 
@@ -14,45 +16,32 @@ export class AppService {
     return this.cart;
   }
 
-  getCartCount() {
-    return this.cartCount$.asObservable();
-  }
-  
-  getTotalPrice() {
-    return this.totalPrice$.asObservable();
-  }
-
-
   addToCart(product: Product | undefined) {
     if (product) {
-      const cartItem = this.cart.find(item => item.product.id === product.id);
+      const cartItem = this.cart().find(item => item.product.id === product.id);
       if (cartItem) {
-        cartItem.quantity++;
+        cartItem.quantity++
+        this.updateQuantity(cartItem.product, cartItem.quantity)
+        // this.cart.set(newCart)
       } else {
-        this.cart.push({ product, quantity: 1 });
+        this.cart.update(c => [...c, {product, quantity: 1}])
       }
-      this.updateCartCount();
     }
   }
 
+  updateQuantity(product: Product, quantity: number) {
+    this.cart.update(cart => cart.map(c => c.product.id == product.id ? {product: product, quantity: quantity} : c))
+  }
+
   removeFromCart(product: Product) {
-    const cartItem = this.cart.find(item => item.product.id === product.id);
+    const cartItem = this.cart().find(item => item.product.id === product.id);
     if (cartItem) {
-      this.cart = this.cart.filter(item => item.product.id !== product.id);
-      this.updateCartCount();
+      this.cart.update(c => c.filter(item => item.product.id !== product.id));
     }
   }
 
   updateCart(updatedCart: CartItem[]) {
-    this.cart = updatedCart;
-    this.updateCartCount();
-  }
-
-  private updateCartCount() {
-    const totalQuantity = this.cart.reduce((acc, item) => acc + item.quantity, 0);
-    this.cartCount$.next(totalQuantity);
-    const totalPrice = this.cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
-    this.totalPrice$.next(Math.round(totalPrice*100)/100)
+    this.cart.set(updatedCart)
   }
   
 }

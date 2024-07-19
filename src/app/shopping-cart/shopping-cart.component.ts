@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, OnInit, Signal, WritableSignal } from '@angular/core';
 import { AppService } from '../app.service';
 import { CartItem, Product } from '../product.model';
 import { NgStyle } from '@angular/common';
@@ -13,31 +13,33 @@ import { FormsModule } from '@angular/forms';
 })
 export class ShoppingCartComponent implements OnInit {
 
-  cart: CartItem[] = []
+  cart
   dollarKeRupiah = 16000
-  totalPrice: string = '0'
+  totalPrice: Signal<string>
   
   constructor(
     private _svc: AppService
   ) {
-    this._svc.totalPrice$.subscribe(r => this.totalPrice = (r * this.dollarKeRupiah).toLocaleString('id-ID'))
-  }
-
-  ngOnInit(): void {
+    // this._svc.totalPrice$.subscribe(r => this.totalPrice = (r * this.dollarKeRupiah).toLocaleString('id-ID'))
+    this.totalPrice = computed(() => (this._svc.totalPrice() * this.dollarKeRupiah).toLocaleString('id-ID'))
     this.cart = this._svc.getCart()
   }
 
+  ngOnInit(): void {
+  }
+
   onQuantityChange(product: Product, quantity: number) {
-    const cartItem = this.cart.find(item => item.product.id === product.id);
+    const cartItem = this.cart().find(item => item.product.id === product.id);
     if (cartItem) {
-      cartItem.quantity = quantity;
-      this._svc.updateCart(this.cart);
+      // cartItem.quantity = quantity;
+      this._svc.updateQuantity(product, quantity)
+      // this._svc.updateCart(this.cart());
     }
   }
 
   removeFromCart(product: Product) {
     this._svc.removeFromCart(product);
-    this.cart = this._svc.getCart();
+    // this.cart = this._svc.getCart();
   }
 
 }
