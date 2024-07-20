@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { Product } from '../product.model';
 import { HttpClient } from '@angular/common/http';
 import { ProductDetailsComponent } from "../product-details/product-details.component";
@@ -14,8 +14,8 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 })
 export class ProductsComponent implements OnInit {
 
-  products: Product[] = []
-  selectedProduct: Product | undefined
+  products = signal<Product[]>([])
+  selectedProduct = signal<Product | undefined>(undefined)
 
   constructor(
     private _http: HttpClient,
@@ -27,13 +27,13 @@ export class ProductsComponent implements OnInit {
     
     this._http.get<Product[]>('https://fakestoreapi.com/products')
     .subscribe(r => {
-      this.products = r
-      if (id) this.selectedProduct = r.find(item => item.id == id)
+      this.products.set(r)
+      if (id) this.selectedProduct.set(r.find(item => item.id == id))
     })
   }
 
   viewProductDetails(product: Product) {
-    this.selectedProduct = product
-    console.log(`selected: ${this.selectedProduct.title}`)
+    this.selectedProduct.set(product)
+    // console.log(`selected: ${this.selectedProduct.title}`)
   }
 }

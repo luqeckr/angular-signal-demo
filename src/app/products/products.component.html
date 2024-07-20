@@ -4,9 +4,9 @@
       <div class="card-header">
         Daftar Produk
       </div>
-      @for (product of products; track $index) {
+      @for (product of products(); track $index) {
       <ul class="list-group list-group-flush">
-        <li class="list-group-item list-group-item-action" [ngClass]="{active: product.id == selectedProduct?.id}"
+        <li class="list-group-item list-group-item-action" [ngClass]="{active: product.id == selectedProduct()?.id}"
           (click)="viewProductDetails(product)" [routerLink]="['/products', product.id]">
           {{ product.title }}
         </li>
@@ -16,8 +16,8 @@
   </div>
 
   <div class="col-md-8">
-    @if (selectedProduct?.title) {
-    <product-details [product]="selectedProduct" />
+    @if (selectedProduct()?.title) {
+    <product-details [product]="selectedProduct()" />
     } @else {
     <div class="alert alert-info">
       Please select a product to see details.

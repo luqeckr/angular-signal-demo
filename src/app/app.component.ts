@@ -13,12 +13,10 @@ import { Observable } from 'rxjs';
 })
 export class AppComponent {
   title = 'signal-sample';
-  cartCount = this._svc.cartCount$
-  totalPrice: Observable<number>
+  cartCount = this._svc.totalQuantity
+  totalPrice = this._svc.totalPrice
   
   constructor(
     private _svc: AppService
-  ) {
-    this.totalPrice = this._svc.totalPrice$
-  }
+  ) {}
 }
